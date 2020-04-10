@@ -6,7 +6,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-
+import Const
 from  oauth2client.service_account import ServiceAccountCredentials
 import gspread
 
@@ -46,25 +46,49 @@ class Sheet:
         [sheet.insert_row(list(data.iloc[i]),2) for i in range(len((data)))]
 
 
+    def GetFolderID(self,dic,courseId:str):
+        work = str(courseId) + Const.FOLDERID
+        sheet = self.client.open("Courses").worksheet(work)
+        data = sheet.get_all_values()
+        headers = data.pop(0)
+
+        df = pd.DataFrame(data, columns=headers)
+        google_drive_id_col = df[df['folderName'] == dic[Const.WHAT_THIS_FILE]]
+        folder_id = google_drive_id_col.iloc[0, 0]
+        print(folder_id)
+        return folder_id
+
+    def UpdateWorkSheet(self,dic:{}):
+
+        if(dic[Const.WHAT_THIS_FILE]==Const.TUTORIAL):
+            work = str(dic[Const.COURSE_ID]) + Const.TUTORIAl_LECTURE_WORK
+            sheet = self.client.open("Courses").worksheet(work)
+            insertRow=[dic[Const.FOLDERID], dic[Const.FILEID],dic[Const.YEAR],
+                       dic[Const.SEMSTER],dic[Const.LECTURE_NAME],
+                       dic[Const.WHAT_THIS_FILE],dic[Const.NUMOFLECTURE],
+                       dic[Const.PARTOFLECTURE],Const.PATH_TO_FILE_DRIVE,dic[Const.REMARKS]]
+            print(insertRow)
+            sheet.insert_row(insertRow, 2)
 
 
-     #   insertRow = [FolderId, courseId, courseName]
-     #   sheet.insert_row(insertRow,1)
+        #TODO dic["lecture_name"] dic["path of file]
+        dict = {
+            "course_id": "8220",
+            "year": "2018",
+            "semster": "A",
+            "numOfLecture": "1",
+            "partOfLecture": "1",
+            "remark": "OrrLaniado",
+            "path_to_file": "unit 2.pdf",
+            "what_this_file": "Tutorial",
+            "WhatKind": "TutorialLecture"
+        }
 
+      #  google_drive_id_col = df[df['CourseID'] == CourseId]
+      #  folder_id = google_drive_id_col.iloc[0, 0]
+      #  print(folder_id)
+      #  return folder_id
 
-
-       # d2g.upload(data,"1B8ROxKr8utzDLM-4mLgapvynDzoiPe4oN8byzgTNx4A",name)
-
-        #existing = gd.get_as_dataframe(sheet)
-        #updated = existing.append(data)
-        #gd.set_with_dataframe(sheet, updated)
-
-        #sheet.insert_row(["hello"],index=1)
-        #sheet.insert_row(["BY"],index=2)
-
-        #sheet.insert_row(["BYE"])
-       # sheet.add_rows("hello")
-        #[sheet.delete_row(i) for i in range(5,)]
 
 
     def InsertCourse(self,FolderId:int,courseId:int,courseName:str):
@@ -74,9 +98,12 @@ class Sheet:
         sheet.insert_row(insertRow,2)
         data = sheet.get_all_records()
         df=pd.DataFrame(data)
-     #   df.insert(2, "Age", [21, 23, 24, 21], True)
-     #   print(df)
-        # pprint(data)
+
+
+    def FindDiractoryID(self,CourseId,folderName):
+        pass
+
+
 
     def FindRootDiractoryID(self,CourseId:str):
         # root Find In Courses
@@ -140,236 +167,113 @@ class GoogleDriveApi:
 
 
 
-    def AddNewCourse(self,courseName:str,courseId:int):
+    def AddCourse(self,courseName:str,courseId:int):
         # save the curseTakeWeCreate as exal file and then we going to enter them file
-        file_root_id = self._AddFolder(name=courseName, fileId="root")
+        file_root_id = self._AddFolder(name=(str(courseName)+str(courseId)), fileId="root")
 
         # FolderId: int, courseId: int, courseName: str):
         self.mySheet.InsertCourse(FolderId=file_root_id, courseId=courseId, courseName=courseName)
 
         # add TestDiractory
-        file_tests_id = self._AddFolder(name="Test", fileId=file_root_id)
-        test_not_sol_folder = self._AddFolder(name="TestWithOutSo", fileId=file_tests_id)
-        test_with_sol_folder = self._AddFolder(name="TestWithSol", fileId=file_tests_id)
-
-        # add TestFolder
-
-        # intialise data of lists.
-        data = {'GoogleDriveID': [test_not_sol_folder, test_with_sol_folder],
-                'folderName': ["TestWithOutSol", "TestWithSol"]}
-
-        # Create DataFrame
-        df = pd.DataFrame(data)
-   #     df.to_excel("TestsFolder.xlsx")
-        # add Test To Folder
-   #     self._UpdateExalToFolder(name="TestsFolder.xlsx", derctory=file_tests_id)
+        test_folder = self._AddFolder(name=Const.TEST, fileId=file_root_id)
+        test_not_sol_folder = self._AddFolder(name=Const.TESTWITHOUTSOL, fileId=test_folder)
+        test_with_sol_folder = self._AddFolder(name=Const.TESTWITHSOL, fileId=test_folder)
 
 
+        # CREATE fOLDERS
+        file__mid_tests_id = self._AddFolder(name=Const.MIDTEST, fileId=file_root_id)
+
+        mid_test_not_sol_folder = self._AddFolder(name=Const.MIDTESTWITHOUTSOL, fileId=file__mid_tests_id)
+
+        mid_test_with_sol_folder = self._AddFolder(name=Const.TESTWITHSOL, fileId=file__mid_tests_id)
+
+        lecture_folder = self._AddFolder(name=Const.LECTURE, fileId=file_root_id)
+
+        turital_folder_id = self._AddFolder(name=Const.TUTORIAL, fileId=file_root_id)
+
+        HW_folder_id = self._AddFolder(name=Const.HWFOLDER, fileId=file_root_id)
+
+        help_staff_folder_id = self._AddFolder(name=Const.HELPSTAFF, fileId=file_root_id)
 
 
-        # add minTest Diractory
+        # Create Data Frame
+        df_list = []
 
-        file__mid_tests_id = self._AddFolder(name="MidTest", fileId=file_root_id)
-        mid_test_not_sol_folder = self._AddFolder(name="MidTestWithOutSol", fileId=file__mid_tests_id)
-        mid_test_with_sol_folder = self._AddFolder(name="MidTestWithSol", fileId=file__mid_tests_id)
-
-        # add TestFolder
-
-        # intialise data of lists.
-        data = {'GoogleDriveID': [mid_test_not_sol_folder, mid_test_with_sol_folder],
-                'folderName': ["MidTestWithOutSol", "MidTestWithSol"]}
-
-        # Create DataFrame
-        df = pd.DataFrame(data)
-
-        df.to_excel("MidTestsFolder.xlsx")
-        # add Test To Folder
-        self._UpdateExalToFolder(name="MidTestsFolder.xlsx", derctory=file__mid_tests_id)
-
-        #  add LectureDiractory
-
-        lecture_folder_id = self._AddFolder(name="Lecture", fileId=file_root_id)
-
-        data = {'GoogleDriveFolderID': [],
-                'fileIdGoogleDriveFileId': [],
-                'year': [],
-                'semster': [],
-                'lectureName': [],
-                'numOfLecture': [],
-                'partOfLecture': [],
-                'pathToFile': [],
-                'remarks': []
-                }
-        df = pd.DataFrame(data)
-        df.to_excel("Lecture.xlsx")
-
-        self._UpdateExalToFolder(name="Lecture.xlsx", derctory=lecture_folder_id)
-
-        # turital
-
-        turital_folder_id = self._AddFolder(name="Tutorial", fileId=file_root_id)
-        df.to_excel("Tutorial.xlsx")
-        self._UpdateExalToFolder(name="Tutorial.xlsx", derctory=turital_folder_id)
-
-        # add  HW Folder
-        HW_folder_id = self._AddFolder(name="HWFolder", fileId=file_root_id)
-        data = {'GoogleDriveFolderID': [],
-                'fileIdGoogleDriveFileId': [],
-                'year': [],
-                'semster': [],
-                'lectureName': [],
-                'numOfHW': [],
-                'partOfHW': [],
-                'pathToFile': [],
-                'ThisIsSol': [],
-                'remarks': []
-                }
-
-        df = pd.DataFrame(data)
-        df.to_excel("HW.xlsx")
-        self._UpdateExalToFolder(name="HW.xlsx", derctory=HW_folder_id)
-
-        # add חומרי עזר נוספים;
-
-        help_staff_folder_id = self._AddFolder(name="HelpStaff", fileId=file_root_id)
-
-        data = {'GoogleDriveFolderID': [],
-                'GoogleDriveFileId': [],
-                'year': [],
-                'semster': [],
-                'whatKind': [],
-                'remarks': []
-                }
-
-        df = pd.DataFrame(data)
-        df.to_excel("HelpStaff.xlsx")
-        self._UpdateExalToFolder(name="HelpStaff.xlsx", derctory=help_staff_folder_id)
-
-        data = {'GoogleDriveID': [file_tests_id, file__mid_tests_id, HW_folder_id, lecture_folder_id, turital_folder_id,
-                                  help_staff_folder_id],
-                'folderName': ["TestFolder", "MidTests", "HWFolder", "LectureFolder", "TuritalFolder",
-                               "HelpStaffFolder"]}
-
-        df = pd.DataFrame(data)
-        df.to_excel("TreeFolder.xlsx")
-        self._UpdateExalToFolder(name="TreeFolder.xlsx", derctory=file_root_id)
-
-
-    def AddCourse(self,courseName:str ,courseId:int):
-        # save the curseTakeWeCreate as exal file and then we going to enter them file
-        file_root_id=self._AddFolder(name=courseName,fileId="root")
-
-        # FolderId: int, courseId: int, courseName: str):
-        self.mySheet.InsertCourse(FolderId=file_root_id,courseId=courseId,courseName=courseName)
-
-        # add TestDiractory
-        file_tests_id=self._AddFolder(name="Test",fileId=file_root_id)
-        test_not_sol_folder=self._AddFolder(name="TestWithOutSo",fileId=file_tests_id)
-        test_with_sol_folder=self._AddFolder(name="TestWithSol",fileId=file_tests_id)
-
-        # add TestFolder
-
-        # intialise data of lists.
-        data = {'GoogleDriveID': [test_not_sol_folder,test_with_sol_folder], 'folderName': ["TestWithOutSol","TestWithSol"]}
+        dataFolder = {'GoogleDriveID': [test_folder,
+                                        test_not_sol_folder,
+                                        test_with_sol_folder,
+                                        file__mid_tests_id,
+                                        mid_test_not_sol_folder,
+                                        mid_test_with_sol_folder,
+                                        lecture_folder,
+                                        turital_folder_id,
+                                        help_staff_folder_id,
+                                        HW_folder_id],
+                      'folderName': [Const.TEST,
+                                     Const.TESTWITHOUTSOL,
+                                     Const.TESTWITHSOL,
+                                     Const.MIDTEST,
+                                     Const.MIDTESTWITHOUTSOL,
+                                     Const.MIDTESTWWIHSOL,
+                                     Const.LECTURE,
+                                     Const.TUTORIAL,
+                                     Const.HELPSTAFF,
+                                     Const.HWFOLDER]}
 
         # Create DataFrame
-        df = pd.DataFrame(data)
+        df = pd.DataFrame(dataFolder)
 
-        df.to_excel("TestsFolder.xlsx")
-        # add Test To Folder
-        self._UpdateExalToFolder(name="TestsFolder.xlsx",derctory=file_tests_id)
+        df_list.append((df,Const.FOLDERID))
 
-
-        # add minTest Diractory
-
-        file__mid_tests_id = self._AddFolder(name="MidTest", fileId=file_root_id)
-        mid_test_not_sol_folder = self._AddFolder(name="MidTestWithOutSol", fileId=file__mid_tests_id)
-        mid_test_with_sol_folder = self._AddFolder(name="MidTestWithSol", fileId=file__mid_tests_id)
-
-        # add TestFolder
-
-        # intialise data of lists.
-        data = {'GoogleDriveID': [mid_test_not_sol_folder, mid_test_with_sol_folder],
-                'folderName': ["MidTestWithOutSol", "MidTestWithSol"]}
-
-        # Create DataFrame
-        df = pd.DataFrame(data)
-
-        df.to_excel("MidTestsFolder.xlsx")
-        # add Test To Folder
-        self._UpdateExalToFolder(name="MidTestsFolder.xlsx", derctory=file__mid_tests_id)
-
-        #  add LectureDiractory
-
-        lecture_folder_id=self._AddFolder(name="Lecture",fileId=file_root_id)
-
-        data = {'GoogleDriveFolderID': [],
-                'fileIdGoogleDriveFileId': [],
-                'year':[],
-                'semster':[],
-                'lectureName':[],
-                'numOfLecture':[],
-                'partOfLecture':[],
-                'pathToFile':[],
-                'remarks':[]
+        data_lecture_totorial = {Const.FOLDERID: [],
+                Const.FILEID: [],
+                Const.YEAR: [],
+                Const.SEMSTER: [],
+                Const.LECTURE_NAME: [],
+                Const.LECTURE_OR_TOTURIAL:[],
+                Const.NUMOFLECTURE: [],
+                Const.PARTOFLECTURE: [],
+                Const.PATH_TO_FILE_DRIVE: [],
+                Const.REMARKS: []
                 }
-        df = pd.DataFrame(data)
-        df.to_excel("Lecture.xlsx")
+        df_lecture_totorial = pd.DataFrame(data_lecture_totorial)
 
+        df_list.append((df_lecture_totorial,Const.TUTORIAl_LECTURE_WORK))
 
-        self._UpdateExalToFolder(name="Lecture.xlsx", derctory=lecture_folder_id)
-
-        # turital
-
-        turital_folder_id=self._AddFolder(name="Tutorial",fileId=file_root_id)
-        df.to_excel("Tutorial.xlsx")
-        self._UpdateExalToFolder(name="Tutorial.xlsx", derctory=turital_folder_id)
-
-
-        # add  HW Folder
-        HW_folder_id = self._AddFolder(name="HWFolder", fileId=file_root_id)
-        data = {'GoogleDriveFolderID': [],
-                'fileIdGoogleDriveFileId': [],
-                'year': [],
-                'semster': [],
-                'lectureName': [],
-                'numOfHW': [],
-                'partOfHW': [],
-                'pathToFile': [],
-                'ThisIsSol':[],
-                'remarks': []
+        data_HW = {Const.FOLDERID: [],
+                Const.FILEID: [],
+                Const.YEAR: [],
+                Const.SEMSTER: [],
+                Const.LECTURE_NAME: [],
+                Const.NUM_OF_HW: [],
+                Const.PART_OF_HW: [],
+                Const.PATH_TO_FILE_DRIVE: [],
+                Const.SOL_OR_HW: [],
+                Const.REMARKS: []
                 }
 
-        df = pd.DataFrame(data)
-        df.to_excel("HW.xlsx")
-        self._UpdateExalToFolder(name="HW.xlsx", derctory=HW_folder_id)
+        df_HW = pd.DataFrame(data_HW)
+
+        df_list.append((df_HW,Const.HWFOLDER))
+        # add חומרי עזר נוספ;
 
 
+        data_help_staff = {Const.FOLDERID: [],
+                Const.FILEID: [],
+                Const.YEAR: [],
+                Const.SEMSTER: [],
+                Const.WORKSPACE: [],
+                Const.REMARKS: []
+                }
+
+        df_help_staf = pd.DataFrame(data_help_staff)
+        df_list.append((df_help_staf,Const.HELPSTAFF))
+
+        create = lambda df,name: self.mySheet.addNewWorkSheet(data=df,name=str(courseId)+str(name))
 
 
-        #add חומרי עזר נוספים;
+        [create(item[0],item[1]) for item in df_list]
 
-        help_staff_folder_id=self._AddFolder(name="HelpStaff",fileId=file_root_id)
-
-        data = {'GoogleDriveFolderID': [],
-            'GoogleDriveFileId': [],
-            'year': [],
-            'semster': [],
-            'whatKind': [],
-            'remarks': []
-            }
-
-        df = pd.DataFrame(data)
-        df.to_excel("HelpStaff.xlsx")
-        self._UpdateExalToFolder(name="HelpStaff.xlsx", derctory=help_staff_folder_id)
-
-
-        data = {'GoogleDriveID': [file_tests_id,file__mid_tests_id,HW_folder_id, lecture_folder_id,turital_folder_id,help_staff_folder_id],
-                'folderName': ["TestFolder","MidTests","HWFolder", "LectureFolder","TuritalFolder","HelpStaffFolder"]}
-
-        df = pd.DataFrame(data)
-        df.to_excel("TreeFolder.xlsx")
-        self._UpdateExalToFolder(name="TreeFolder.xlsx", derctory=file_root_id)
 
     def _UpdateExalToFolder(self,name:str,derctory:int):
         file_metadata = {
@@ -416,10 +320,54 @@ class GoogleDriveApi:
 
 
 
-    def AddFile(self,data:dict):
 
-        self.mySheet.FindDiractoryID(FolderId=file_root_id, courseId=courseId, courseName=courseName)
-        sheet = self.client.open("Courses").sheet1
+    def _getFilePath(self,fileid:str):
+        fileId = fileid
+        tree = []  # Result
+        file = self.service.files().get(fileId=fileId,fields='id,name, parents').execute()
+        parent = file.get('parents')
+        if parent:
+            while True:
+                folder = self.service.files().get(
+                    fileId=parent[0], fields='id, name, parents').execute()
+                parent = folder.get('parents')
+                if parent is None:
+                    break
+                tree.append({'id': parent[0], 'name': folder.get('name')})
+
+        print(tree)
+
+
+
+
+    def AddFile(self,data:{}):
+
+
+        folderId=self.mySheet.GetFolderID(dic=data,courseId=data["course_id"])
+
+
+        name ="{} Number {} Part {} Semster {} Year {} LectureName {} Autor by {}"
+        file_metadata={
+            'name': name.format(data[Const.WHAT_THIS_FILE],data[Const.NUMOFLECTURE],
+                                data[Const.PARTOFLECTURE],data[Const.SEMSTER]
+                                ,data[Const.YEAR],data[Const.LECTURE_NAME],data[Const.REMARKS]),
+
+            'mineType':'application/pdf',
+            'parents': [folderId]
+        }
+        media = MediaFileUpload(data[Const.PATH_TO_FILE])
+
+        file_id = self.service.files().create(body=file_metadata,
+                                            media_body=media,
+                                            fields='id').execute()
+
+        #self._getFilePath(file.get('id'))
+
+        data[Const.FILEID]=file_id.get("id")
+        data[Const.FOLDERID]=folderId
+
+        self.mySheet.UpdateWorkSheet(data)
+
 
         # find the course
 
@@ -436,23 +384,27 @@ class GoogleDriveApi:
         'File ID: %s' % file.get('id')
 
 
+
+
+
 if __name__ == '__main__':
-    #gda=GoogleDriveApi()
-    #gda.AddCourse(courseName="לוגיקה למדעי המחשב" ,courseId=11111)
-    sh=Sheet()
-    sh.FindRootDiractoryID("104032")
-
-    data = {'GoogleDriveFolderID': [1,2,3],
-            'GoogleDriveFileId': [4,5,6],
-            'year': [7,8,9],
-            'semster': [10,11,12],
-            'whatKind': [13,14,15],
-            'remarks': [16,17,18]
-            }
-
-    df = pd.DataFrame(data)
-    sh.addNewWorkSheet(data=df,name="yes")
-
+    gda=GoogleDriveApi()
+  #  gda.AddCourse(courseName="TEST",courseId="8220")
+    # Create DataFrame
+    dict = {
+        Const.COURSE_ID:"8220",
+        Const.YEAR: "2018",
+        Const.SEMSTER: "A",
+        Const.NUMOFLECTURE: "1",
+        Const.PARTOFLECTURE: "1",
+        Const.REMARKS: "OrrLaniado",
+        Const.PATH_TO_FILE:"unit 2.pdf",
+        Const.WHAT_THIS_FILE:"Tutorial",
+        Const.TUTORIAl_LECTURE_WORK:"TutorialLecture",
+        Const.LECTURE_NAME:"AVIV SENSOR",
+        Const.PATH_TO_FILE_DRIVE:"YESS"
+    }
+    gda.AddFile(dict.copy())
 
    # gda.AddFolder("Orr")
    # gda.UpdateFile("yes")

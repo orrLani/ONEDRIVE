@@ -4,6 +4,7 @@ from orr import GoogleDriveApi
 from AddCourseGuI import AddCourseGuI
 from AddFileGui import AddFileGui
 from AddLectureTutorial import AddLectureTutorial
+from MergeSplitGUI import MergeSplitGUI
 
 from os import listdir
 from os.path import isfile, join
@@ -55,6 +56,9 @@ class MyFrame(wx.Frame):
 
         self.btn8 = wx.Button(self.panel,label="I wanna to do nice qulity")
 
+        self.btn9 =wx.Button(self.panel,label="I wanna split/merge pdf ")
+
+
 
 
 
@@ -75,6 +79,8 @@ class MyFrame(wx.Frame):
         sizer.Add(self.btn6,0,wx.ALL,10)
         sizer.Add(self.btn7,0,wx.ALL,10)
         sizer.Add(self.btn8, 0, wx.ALL, 10)
+        sizer.Add(self.btn9,0,wx.ALL,10)
+
 
 
 
@@ -89,7 +95,15 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnAddNewFile, self.btn3)
         self.Bind(wx.EVT_BUTTON, self.OnAddNewExamMidExam, self.btn4)
         self.Bind(wx.EVT_BUTTON, self.OnAddNewLectureTutorial, self.btn5)
+        self.Bind(wx.EVT_BUTTON, self.OnMergeSplit, self.btn9)
+
         self.panel.Layout()
+
+    def OnMergeSplit(self,event):
+        self.merge_split= MergeSplitGUI()
+        print("Merge")
+
+
 
     def OnInit(self,event):
         pass
