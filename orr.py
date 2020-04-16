@@ -53,15 +53,19 @@ class Sheet:
         headers = data.pop(0)
 
         df = pd.DataFrame(data, columns=headers)
-        google_drive_id_col = df[df['folderName'] == dic[Const.WHAT_THIS_FILE]]
+        if dic[Const.WHAT_THIS_FILE] == Const.SOLUTION or dic[Const.WHAT_THIS_FILE] == Const.HW:
+            google_drive_id_col =  df[df['folderName'] == Const.HWSOLUTION]
+        else:
+            google_drive_id_col = df[df['folderName'] == dic[Const.WHAT_THIS_FILE]]
         folder_id = google_drive_id_col.iloc[0, 0]
         print(folder_id)
         return folder_id
 
     def UpdateWorkSheet(self,dic:{}):
 
-        if(dic[Const.WHAT_THIS_FILE]==Const.TUTORIAL):
-            work = str(dic[Const.COURSE_ID]) + Const.TUTORIAl_LECTURE_WORK
+        what_this_file = dic[Const.WHAT_THIS_FILE]
+        if what_this_file==Const.Toturial or what_this_file==Const.LECTURE:
+            work = str(dic[Const.COURSE_ID]) + Const.Toturial_LECTURE_WORK
             sheet = self.client.open("Courses").worksheet(work)
             insertRow=[dic[Const.FOLDERID], dic[Const.FILEID],dic[Const.YEAR],
                        dic[Const.SEMSTER],dic[Const.LECTURE_NAME],
@@ -70,6 +74,15 @@ class Sheet:
             print(insertRow)
             sheet.insert_row(insertRow, 2)
 
+        if what_this_file ==Const.HW or what_this_file==Const.SOLUTION:
+            work = str(dic[Const.COURSE_ID]) + Const.HWSOLUTION
+            sheet = self.client.open("Courses").worksheet(work)
+            insertRow = [dic[Const.FOLDERID], dic[Const.FILEID], dic[Const.YEAR],
+                         dic[Const.SEMSTER], dic[Const.LECTURE_NAME],
+                         dic[Const.WHAT_THIS_FILE], dic[Const.NUMOFLECTURE],
+                         dic[Const.PARTOFLECTURE], Const.PATH_TO_FILE_DRIVE, dic[Const.REMARKS]]
+            print(insertRow)
+            sheet.insert_row(insertRow, 2)
 
         #TODO dic["lecture_name"] dic["path of file]
         dict = {
@@ -80,8 +93,8 @@ class Sheet:
             "partOfLecture": "1",
             "remark": "OrrLaniado",
             "path_to_file": "unit 2.pdf",
-            "what_this_file": "Tutorial",
-            "WhatKind": "TutorialLecture"
+            "what_this_file": "Toturial",
+            "WhatKind": "ToturialLecture"
         }
 
       #  google_drive_id_col = df[df['CourseID'] == CourseId]
@@ -158,6 +171,8 @@ class GoogleDriveApi:
             pageSize=10, fields="nextPageToken, files(id, name)").execute()
         items = results.get('files', [])
 
+
+      #  results_1 =self.service.files().list(pageSize=10, fields="nextPageToken, folder(id, name)").execute()
         if not items:
             print('No files found.')
         else:
@@ -189,9 +204,9 @@ class GoogleDriveApi:
 
         lecture_folder = self._AddFolder(name=Const.LECTURE, fileId=file_root_id)
 
-        turital_folder_id = self._AddFolder(name=Const.TUTORIAL, fileId=file_root_id)
+        turital_folder_id = self._AddFolder(name=Const.Toturial, fileId=file_root_id)
 
-        HW_folder_id = self._AddFolder(name=Const.HWFOLDER, fileId=file_root_id)
+        HW_folder_id = self._AddFolder(name=Const.HWSOLUTION, fileId=file_root_id)
 
         help_staff_folder_id = self._AddFolder(name=Const.HELPSTAFF, fileId=file_root_id)
 
@@ -216,7 +231,7 @@ class GoogleDriveApi:
                                      Const.MIDTESTWITHOUTSOL,
                                      Const.MIDTESTWWIHSOL,
                                      Const.LECTURE,
-                                     Const.TUTORIAL,
+                                     Const.Toturial,
                                      Const.HELPSTAFF,
                                      Const.HWFOLDER]}
 
@@ -238,17 +253,17 @@ class GoogleDriveApi:
                 }
         df_lecture_totorial = pd.DataFrame(data_lecture_totorial)
 
-        df_list.append((df_lecture_totorial,Const.TUTORIAl_LECTURE_WORK))
+        df_list.append((df_lecture_totorial,Const.Toturial_LECTURE_WORK))
 
         data_HW = {Const.FOLDERID: [],
                 Const.FILEID: [],
                 Const.YEAR: [],
                 Const.SEMSTER: [],
                 Const.LECTURE_NAME: [],
+                Const.SOL_OR_HW: [],
                 Const.NUM_OF_HW: [],
                 Const.PART_OF_HW: [],
                 Const.PATH_TO_FILE_DRIVE: [],
-                Const.SOL_OR_HW: [],
                 Const.REMARKS: []
                 }
 
@@ -343,7 +358,7 @@ class GoogleDriveApi:
     def AddFile(self,data:{}):
 
 
-        folderId=self.mySheet.GetFolderID(dic=data,courseId=data["course_id"])
+        folderId=self.mySheet.GetFolderID(dic=data,courseId=data[Const.COURSE_ID])
 
 
         name ="{} Number {} Part {} Semster {} Year {} LectureName {} Autor by {}"
@@ -399,8 +414,8 @@ if __name__ == '__main__':
         Const.PARTOFLECTURE: "1",
         Const.REMARKS: "OrrLaniado",
         Const.PATH_TO_FILE:"unit 2.pdf",
-        Const.WHAT_THIS_FILE:"Tutorial",
-        Const.TUTORIAl_LECTURE_WORK:"TutorialLecture",
+        Const.WHAT_THIS_FILE:"Toturial",
+        Const.Toturial_LECTURE_WORK:"ToturialLecture",
         Const.LECTURE_NAME:"AVIV SENSOR",
         Const.PATH_TO_FILE_DRIVE:"YESS"
     }

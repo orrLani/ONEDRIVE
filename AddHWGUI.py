@@ -1,14 +1,19 @@
 import wx
 from orr import GoogleDriveApi
+from OneDriveApi import OneDriveApi
 
 import Const
 GoogleDriveApi=None
+OneDriveApi = None
 
-class AddLectureTutorial:
 
-    def __init__(self,googleDriveApi:GoogleDriveApi):
+class AddHWGUI:
+
+    def __init__(self,googleDriveApi:GoogleDriveApi,oneDriveApi:OneDriveApi):
         global GoogleDriveApi
         GoogleDriveApi=googleDriveApi
+        global OneDriveApi
+        OneDriveApi=oneDriveApi
         app = MyApp()
         app.MainLoop()
 
@@ -16,7 +21,7 @@ class AddLectureTutorial:
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(parent=None, title="AddLectureTutorial")
+        self.frame = MyFrame(parent=None, title="ADDHWSOLUTION")
         self.frame.Show()
         return True
 
@@ -50,7 +55,7 @@ class MyFrame(wx.Frame):
 
         # what num of lecture/tutorial box
         course_num_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_num = wx.StaticText(self, label="lecture/tutorial num")
+        course_num = wx.StaticText(self, label="hmNum/solNum")
         course_num_box.Add(course_num, 0, wx.ALL | wx.CENTER, 5)
         self.course_num = wx.TextCtrl(self)
         course_num_box.Add(self.course_num, 0, wx.ALL, 5)
@@ -82,39 +87,18 @@ class MyFrame(wx.Frame):
         # course remarks box
 
         course_remarks_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_remarks = wx.StaticText(self, label="Remarks:")
+        course_remarks = wx.StaticText(self, label="Auther:")
         course_remarks_box.Add(course_remarks, 0, wx.ALL | wx.CENTER, 5)
         self.remarks = wx.TextCtrl(self)
         course_remarks_box.Add(self.remarks, 0, wx.ALL, 5)
 
         # add kind of file ChekeBox
-        what_kind_of_file_List = ['Tutorial','Lecture']
+        what_kind_of_file_List = ['HW','SOL']
 
         self.kind_file = wx.RadioBox(self, label='whatKindOfFile', choices=what_kind_of_file_List,
                                      majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.kind_file.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
 
-
-
-
-
-
-
-
-
-
-        # if this
-
-
-
-
-
-
-       # course_year_box = wx.BoxSizer(wx.HORIZONTAL)
-       # course_name = wx.StaticText(self, label="WhatKindOfFile:")
-       # course_year_box.Add(course_name, 0, wx.ALL | wx.CENTER, 5)
-       # self.name = wx.TextCtrl(self)
-       # course_year_box.Add(self.name, 0, wx.ALL, 5)
 
         # connect
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -140,9 +124,10 @@ class MyFrame(wx.Frame):
 
         # update to google drive
 
-        btn = wx.Button(self, label="Update")
-        btn.Bind(wx.EVT_BUTTON, self.OnUpdate)
-        main_sizer.Add(btn, 0, wx.ALL | wx.CENTER, 5)
+        btn1 = wx.Button(self, label="UpdateToOneDrive")
+        btn1.Bind(wx.EVT_BUTTON, self.OnUpdate)
+        main_sizer.Add(btn1, 0, wx.ALL | wx.CENTER, 5)
+
 
 
         self.SetSizer(main_sizer)
@@ -157,15 +142,19 @@ class MyFrame(wx.Frame):
                 Const.COURSE_ID: self.course_id.GetValue(),
                 Const.YEAR: self.course_year.GetValue(),
                 Const.SEMSTER:'A' if semstr == 0 else 'B' if semstr==1 else 'C',
-                Const.NUMOFLECTURE:self.course_num.GetValue(),
                 Const.PARTOFLECTURE:int(self.kind_part.GetSelection())+1,
                 Const.REMARKS:self.remarks.GetValue(),
                 Const.PATH_TO_FILE:str(self.pathname),
                 Const.LECTURE_NAME :str(self.course_lecture_name.GetValue()),
-                Const.LECTURE_OR_TOTURIAL:self.kind_file.GetSelection(),
-                Const.WHAT_THIS_FILE:Const.LECTURE if self.kind_semster.GetSelection()==1 else Const.TUTORIAL
+                Const.HWSOLUTION:self.kind_file.GetSelection(),
+                Const.SOL_OR_HW:Const.SOLUTION if int(self.kind_file.GetSelection())==1 else Const.HW,
+                Const.FILEID: 1,
+                Const.NUM_OF_HW:self.course_num.GetValue(),
+                Const.PART_OF_HW:int(self.kind_part.GetSelection())+1,
         }
-        GoogleDriveApi.AddFile(data=dict.copy())
+        OneDriveApi.AddHwSol(data=dict.copy())
+
+     #   GoogleDriveApi.AddFile(data=dict.copy())
 
 
 

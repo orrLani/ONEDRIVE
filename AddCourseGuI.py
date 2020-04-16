@@ -1,14 +1,22 @@
 import wx
 import orr
 from orr import GoogleDriveApi
+from OneDriveApi import OneDriveApi
+
+
+
 
 GoogleDriveApi=None
 
+OneDriveApi=None
+
 class AddCourseGuI:
 
-    def __init__(self,googleDriveApi:GoogleDriveApi):
+    def __init__(self,googleDriveApi:GoogleDriveApi,oneDriveApi:OneDriveApi):
         global GoogleDriveApi
         GoogleDriveApi=googleDriveApi
+        global OneDriveApi
+        OneDriveApi=oneDriveApi
         app = MyApp()
         app.MainLoop()
 
@@ -51,6 +59,19 @@ class MyFrame(wx.Frame):
         btn.Bind(wx.EVT_BUTTON, self.OnAddCourse)
         main_sizer.Add(btn, 0, wx.ALL | wx.CENTER, 5)
         self.SetSizer(main_sizer)
+
+        btn1 = wx.Button(self,label="AddCourseToBigOnedrive")
+        btn1.Bind(wx.EVT_BUTTON, self.OnAddCourseToOneDrive)
+        main_sizer.Add(btn1, 0, wx.ALL | wx.CENTER, 5)
+        self.SetSizer(main_sizer)
+
+
+    def OnAddCourseToOneDrive(self,event):
+        global OneDriveApi
+        OneDriveApi.AddCourse(self.name.GetValue(),self.course_id.GetValue())
+        self.Close(True)
+
+
 
 
     def OnAddCourse(self,event):

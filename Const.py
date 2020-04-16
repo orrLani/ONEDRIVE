@@ -1,7 +1,7 @@
 
 
 # GETFILE
-COURSE_ID = "course_id"
+COURSE_ID = "courseId"
 YEAR = "year"
 SEMSTER = "semster"
 NUMOFLECTURE = "numOfLecture"
@@ -10,13 +10,13 @@ REMARKS = "remarks"
 PATH_TO_FILE = "path_to_file"
 WHAT_THIS_FILE = "what_this_file"
 WORKSPACE = "WhatKind"
-LECTURE_NAME = "lecture_name"
+LECTURE_NAME = "lectureName"
 PATH_TO_FILE_DRIVE = "pathToFile"
 FOLDERID="folderId"
-FILEID="file_id"
+FILEID="fileId"
 NUM_OF_HW="numOfHW"
 PART_OF_HW="partOfHW"
-SOL_OR_HW=""
+SOL_OR_HW="HWORSolution"
 #CREATEFOLDER
 
 TEST = "Test"
@@ -26,8 +26,8 @@ MIDTEST = "MidTest"
 MIDTESTWITHOUTSOL = "MidTestWithOutSol"
 MIDTESTWWIHSOL="MidTestWithSol"
 LECTURE="Lecture"
-TUTORIAL="Tutorial"
-HWFOLDER    ="HWFolder"
+Toturial="Toturial"
+HWFOLDER    ="HWSolution"
 HELPSTAFF   ="HelpStaff"
 
 #CREATE DATATAWOR  ??
@@ -35,11 +35,27 @@ HELPSTAFF   ="HelpStaff"
 LECTURE_OR_TOTURIAL="lectureOrToturial"
 
 
-TUTORIAl_LECTURE_WORK="TutorialLecture"
+Toturial_LECTURE_WORK="ToturialLecture"
+
+HWSOLUTION="HWSolution"
+HW="HW"
+SOLUTION="SOLUTION"
 
 
 
+#Test or middd
+TEST_OR_MIDTEST="testOrMidtest"
 
+# sol or
+QUESTION_OR_SOL="questionOrSol"
+
+TEST_MIDTEST_WORK="TestMidtest"
+MOED = "moed"
+
+QUE_OR_SOL="Questionnaire_OR_Solution"
+QUE='Questionnaire'
+TEST='Test'
+MIDTEST='MidTest'
 
 
 

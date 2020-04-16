@@ -1,14 +1,17 @@
 import wx
 from orr import GoogleDriveApi
-
+from  OneDriveApi import OneDriveApi
 import Const
 GoogleDriveApi=None
+OneDriveApi=None
 
 class AddLectureTutorial:
 
-    def __init__(self,googleDriveApi:GoogleDriveApi):
+    def __init__(self,googleDriveApi:GoogleDriveApi,oneDriveApi:OneDriveApi):
         global GoogleDriveApi
         GoogleDriveApi=googleDriveApi
+        global OneDriveApi
+        OneDriveApi=oneDriveApi
         app = MyApp()
         app.MainLoop()
 
@@ -50,7 +53,7 @@ class MyFrame(wx.Frame):
 
         # what num of lecture/tutorial box
         course_num_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_num = wx.StaticText(self, label="lecture/tutorial num")
+        course_num = wx.StaticText(self, label="lecture/Toturial num")
         course_num_box.Add(course_num, 0, wx.ALL | wx.CENTER, 5)
         self.course_num = wx.TextCtrl(self)
         course_num_box.Add(self.course_num, 0, wx.ALL, 5)
@@ -88,7 +91,7 @@ class MyFrame(wx.Frame):
         course_remarks_box.Add(self.remarks, 0, wx.ALL, 5)
 
         # add kind of file ChekeBox
-        what_kind_of_file_List = ['Tutorial','Lecture']
+        what_kind_of_file_List = ['Toturial','Lecture']
 
         self.kind_file = wx.RadioBox(self, label='whatKindOfFile', choices=what_kind_of_file_List,
                                      majorDimension=1, style=wx.RA_SPECIFY_ROWS)
@@ -162,10 +165,12 @@ class MyFrame(wx.Frame):
                 Const.REMARKS:self.remarks.GetValue(),
                 Const.PATH_TO_FILE:str(self.pathname),
                 Const.LECTURE_NAME :str(self.course_lecture_name.GetValue()),
-                Const.LECTURE_OR_TOTURIAL:self.kind_file.GetSelection(),
-                Const.WHAT_THIS_FILE:Const.LECTURE if self.kind_semster.GetSelection()==1 else Const.TUTORIAL
+                Const.WHAT_THIS_FILE:Const.LECTURE if int(self.kind_file.GetSelection())==1 else Const.Toturial,
+                Const.LECTURE_OR_TOTURIAL:Const.LECTURE if int(self.kind_file.GetSelection())==1 else Const.Toturial
         }
-        GoogleDriveApi.AddFile(data=dict.copy())
+        OneDriveApi.AddLectureToturial(data=dict.copy())
+
+        #GoogleDriveApi.AddFile(data=dict.copy())
 
 
 

@@ -3,7 +3,7 @@ import wx
 import Const
 from PyPDF2 import PdfFileReader,PdfFileWriter ,PdfFileMerger
 
-
+import os.path
 class MergeSplitGUI:
 
     def __init__(self):
@@ -103,19 +103,35 @@ class MyFrame(wx.Frame):
         self.SetSizerAndFit(self.main_sizer)
 
 
+
+
     def OnSplit(self,event):
         print(self.pathname_file)
         pdf_document =self.pathname_file
         pdf = PdfFileReader(pdf_document)
 
-        for page in range(pdf.getNumPages()):
+
+        getIndex = lambda index : (int(self.text_from[index].GetValue()) ,int(self.text_to[index].GetValue()))
+
+
+        # self.text_from
+        # self.text_to
+        # num of elemnts self.text_to
+        num_of_elemnts = len(self.text_to)
+
+        for i in range(num_of_elemnts):
+            (from_page,to_page)=getIndex(i)
             pdf_writer = PdfFileWriter()
-            current_page = pdf.getPage(page)
-            pdf_writer.addPage(page=current_page)
-            outputFilename = "example-page-{}.pdf".format(page + 1)
-            with open(outputFilename, "wb") as out:
+            for page in range(from_page,to_page+1):
+                current_page = pdf.getPage(int(page))
+                pdf_writer.addPage(page=current_page)
+
+            output_file_name = "split_num_{}.pdf".format(i + 1)
+            save_path = self.pathname_folder
+            compate_name=os.path.join(save_path,output_file_name)
+            with open(compate_name, "wb") as out:
                 pdf_writer.write(out)
-                print("created", outputFilename)
+                print("created", output_file_name)
 
 
     def _OnNumSplit(self, num):

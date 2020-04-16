@@ -5,7 +5,10 @@ from AddCourseGuI import AddCourseGuI
 from AddFileGui import AddFileGui
 from AddLectureTutorial import AddLectureTutorial
 from MergeSplitGUI import MergeSplitGUI
-
+from AddHWGUI import AddHWGUI
+from OneDriveApi import OneDriveApi
+from  AddExamMidExam import AddExamMidExam
+from AddHelpStaffGUI import  AddHelpStaff
 from os import listdir
 from os.path import isfile, join
 class MyFrame(wx.Frame):
@@ -17,6 +20,7 @@ class MyFrame(wx.Frame):
         self.panel = wx.Panel(self)
 
         self.googleDriveApi=GoogleDriveApi()
+        self.oneDriveApi =OneDriveApi("E:/onedriveNew/OneDrive - Technion/CsDriveNew")
 
 
 
@@ -94,11 +98,19 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnAddNewCourse, self.btn2)
         self.Bind(wx.EVT_BUTTON, self.OnAddNewFile, self.btn3)
         self.Bind(wx.EVT_BUTTON, self.OnAddNewExamMidExam, self.btn4)
+        self.Bind(wx.EVT_BUTTON, self.OnAddNewHW,self.btn6)
+        self.Bind(wx.EVT_BUTTON,self.OnAddHelpStaff,self.btn7)
         self.Bind(wx.EVT_BUTTON, self.OnAddNewLectureTutorial, self.btn5)
         self.Bind(wx.EVT_BUTTON, self.OnMergeSplit, self.btn9)
 
         self.panel.Layout()
 
+    def OnAddHelpStaff(self,event):
+        self.helpStaff= AddHelpStaff(self.googleDriveApi,self.oneDriveApi)
+
+
+    def OnAddNewHW(self,event):
+        self.hw= AddHWGUI(self.googleDriveApi,self.oneDriveApi)
     def OnMergeSplit(self,event):
         self.merge_split= MergeSplitGUI()
         print("Merge")
@@ -111,14 +123,16 @@ class MyFrame(wx.Frame):
 
     def OnAddNewLectureTutorial(self,event):
         print("tttt")
-        self.add_lecutre_tutorial = AddLectureTutorial(self.googleDriveApi)
+        self.add_lecutre_tutorial = AddLectureTutorial(self.googleDriveApi,self.oneDriveApi)
 
     def OnAddNewExamMidExam(self,event):
+        self.add_exam_mid_exam =AddExamMidExam(self.googleDriveApi,self.oneDriveApi)
+
         pass
 
     def OnAddNewCourse(self, event):
         print("yes!!")
-        self.addCourseGuI=AddCourseGuI(self.googleDriveApi)
+        self.addCourseGuI=AddCourseGuI(self.googleDriveApi,self.oneDriveApi)
 
         print("Yes")
 
