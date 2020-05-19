@@ -1,5 +1,5 @@
 import wx
-from orr import GoogleDriveApi
+# from orr import GoogleDriveApi
 from  OneDriveApi import OneDriveApi
 import Const
 GoogleDriveApi=None
@@ -53,7 +53,7 @@ class MyFrame(wx.Frame):
 
         # what num of lecture/tutorial box
         course_num_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_num = wx.StaticText(self, label="lecture/Toturial num")
+        course_num = wx.StaticText(self, label="lecture/Tutorial num")
         course_num_box.Add(course_num, 0, wx.ALL | wx.CENTER, 5)
         self.course_num = wx.TextCtrl(self)
         course_num_box.Add(self.course_num, 0, wx.ALL, 5)
@@ -63,7 +63,7 @@ class MyFrame(wx.Frame):
 
         what_kind_of_part_List = ['1', '2', '3']
 
-        self.kind_part = wx.RadioBox(self, label='whatKindOfPart', choices=what_kind_of_part_List,
+        self.kind_part = wx.RadioBox(self, label='Version', choices=what_kind_of_part_List,
                                         majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.kind_part.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
 
@@ -73,7 +73,7 @@ class MyFrame(wx.Frame):
 
         what_kind_of_semster_List = ['A', 'B','C']
 
-        self.kind_semster = wx.RadioBox(self, label='whatKindOfSemster', choices=what_kind_of_semster_List,
+        self.kind_semster = wx.RadioBox(self, label='whatKindOfSemester', choices=what_kind_of_semster_List,
                                      majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.kind_semster.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
 
@@ -91,7 +91,7 @@ class MyFrame(wx.Frame):
         course_remarks_box.Add(self.remarks, 0, wx.ALL, 5)
 
         # add kind of file ChekeBox
-        what_kind_of_file_List = ['Toturial','Lecture']
+        what_kind_of_file_List = ['Tutorial','Lecture']
 
         self.kind_file = wx.RadioBox(self, label='whatKindOfFile', choices=what_kind_of_file_List,
                                      majorDimension=1, style=wx.RA_SPECIFY_ROWS)

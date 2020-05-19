@@ -26,9 +26,10 @@ MIDTEST = "MidTest"
 MIDTESTWITHOUTSOL = "MidTestWithOutSol"
 MIDTESTWWIHSOL="MidTestWithSol"
 LECTURE="Lecture"
-Toturial="Toturial"
+Toturial="Tutorial"
 HWFOLDER    ="HWSolution"
-HELPSTAFF   ="HelpStaff"
+HELPSTAFF   ="HelpStuff"
+VERSION ="Version"
 
 #CREATE DATATAWOR  ??
 

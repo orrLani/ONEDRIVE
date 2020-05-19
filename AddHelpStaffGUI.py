@@ -1,5 +1,5 @@
 import wx
-from orr import GoogleDriveApi
+# from orr import GoogleDriveApi
 from OneDriveApi import OneDriveApi
 
 import Const
@@ -21,7 +21,7 @@ class AddHelpStaff:
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(parent=None, title="ADDHWSOLUTION")
+        self.frame = MyFrame(parent=None, title="AddHelpStuff")
         self.frame.Show()
         return True
 
@@ -54,7 +54,7 @@ class MyFrame(wx.Frame):
 
         what_kind_of_semster_List = ['A', 'B', 'C']
 
-        self.kind_semster = wx.RadioBox(self, label='Semster', choices=what_kind_of_semster_List,
+        self.kind_semster = wx.RadioBox(self, label='Semester', choices=what_kind_of_semster_List,
                                         majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.kind_semster.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
 
@@ -70,7 +70,7 @@ class MyFrame(wx.Frame):
 
 
         course_remarks_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_remarks = wx.StaticText(self, label="Auther:")
+        course_remarks = wx.StaticText(self, label="Author:")
         course_remarks_box.Add(course_remarks, 0, wx.ALL | wx.CENTER, 5)
         self.remarks = wx.TextCtrl(self)
         course_remarks_box.Add(self.remarks, 0, wx.ALL, 5)

@@ -1,5 +1,5 @@
 import wx
-from orr import GoogleDriveApi
+# from orr import GoogleDriveApi
 from OneDriveApi import OneDriveApi
 
 import Const
@@ -21,7 +21,7 @@ class AddExamMidExam:
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(parent=None, title="ADDHWSOLUTION")
+        self.frame = MyFrame(parent=None, title="AddExamMidExam")
         self.frame.Show()
         return True
 
@@ -70,7 +70,7 @@ class MyFrame(wx.Frame):
 
         what_kind_of_semster_List = ['A', 'B','C']
 
-        self.kind_semster = wx.RadioBox(self, label='Semster', choices=what_kind_of_semster_List,
+        self.kind_semster = wx.RadioBox(self, label='Semester', choices=what_kind_of_semster_List,
                                      majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.kind_semster.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
 
@@ -82,7 +82,7 @@ class MyFrame(wx.Frame):
         # course remarks box
 
         course_remarks_box = wx.BoxSizer(wx.HORIZONTAL)
-        course_remarks = wx.StaticText(self, label="Auther:")
+        course_remarks = wx.StaticText(self, label="Author:")
         course_remarks_box.Add(course_remarks, 0, wx.ALL | wx.CENTER, 5)
         self.remarks = wx.TextCtrl(self)
         course_remarks_box.Add(self.remarks, 0, wx.ALL, 5)
@@ -104,6 +104,13 @@ class MyFrame(wx.Frame):
 
 
 
+        what_kind_of_version = ['1', '2', '3', '4', '5', '6']
+
+        self.kind_version = wx.RadioBox(self, label='Version', choices=what_kind_of_version,
+                                     majorDimension=1, style=wx.RA_SPECIFY_ROWS)
+        self.kind_version.Bind(wx.EVT_RADIOBOX, self.OnRadioBox)
+
+
 
 
 
@@ -117,6 +124,7 @@ class MyFrame(wx.Frame):
         main_sizer.Add(self.kind_semster,0,wx.ALL,5)
         main_sizer.Add(self.kind_file, 0, wx.ALL, 5)
         main_sizer.Add(self.kind_file_qu_sol,0,wx.ALL,5)
+        main_sizer.Add(self.kind_version,0,wx.ALL,5)
         main_sizer.Add( course_remarks_box,0,wx.ALL,5)
 
 
@@ -147,6 +155,7 @@ class MyFrame(wx.Frame):
         semstr= self.kind_semster.GetSelection()
         moed =self.kind_part.GetSelection()
 
+
         dict={
                 Const.COURSE_ID: self.course_id.GetValue(),
                 Const.YEAR: self.course_year.GetValue(),
@@ -157,7 +166,9 @@ class MyFrame(wx.Frame):
                 Const.QUE_OR_SOL:Const.QUE if self.kind_file_qu_sol.GetSelection()==0 else Const.SOLUTION,
                 Const.TEST_OR_MIDTEST:Const.TEST if self.kind_file.GetSelection()==0 else Const.MIDTEST,
                 Const.LECTURE_NAME :str(self.course_lecture_name.GetValue()),
+                Const.VERSION:int(self.kind_semster.GetSelection())+1,
                 Const.FILEID: 1,
+
         }
 
         OneDriveApi.AddTest(data=dict.copy())
